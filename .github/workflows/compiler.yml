@@ -23,6 +23,8 @@ jobs:
           filename: auto
     env:
       chessPass: ${{ secrets.chessPass }}
+      chessUser: ${{ secrets.chessUser }}
+      chessToEmail: ${{ secrets.chessToEmail }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -46,7 +48,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: cmd
       run: |
-        python -c "import os;open(\"passw.py^\", 'w').write('PASSWORD=\"'+os.environ['chessPass']+'\"')"
+        python -c "import os;open(\"passw.py^\",'w').write('PASSWORD=\"'+os.environ['chessPass']+'\"\n"'+'USERNAME=\"'+os.environ['chessUser']+'\"\n'+'TO_EMAIL=\"'+os.environ['chessToEmail']+'\"')"
     - name: Compile
       run: |
         pyinstaller --onefile auto.py
