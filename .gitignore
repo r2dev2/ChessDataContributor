@@ -1,0 +1,11 @@
+zips/*
+pgns/*
+*.pickle
+*~
+stockfish/
+stockfish.zip
+__MAC*
+*cpython*
+data/
+dest/
+passw.py
