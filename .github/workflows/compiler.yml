@@ -1,0 +1,60 @@
+name: Compile and Release
+
+on: 
+  release:
+    types:
+      - published
+
+jobs:
+  deploy:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        include: 
+        - os: macos-latest
+          executable: chesscontributor-mac
+          filename: auto
+        - os: windows-latest
+          executable: chesscontributor-win.exe
+          filename: auto.exe
+        - os: ubuntu-latest
+          executable: chesscontributor-linux
+          filename: auto
+    env:
+      chessPass: ${{ secrets.chessPass }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+    - name : Print GitHub context
+      env: 
+        GITHUB_CONTEXT: ${{ toJson(github) }} 
+      run: echo "$GITHUB_CONTEXT" 
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r requirements.txt
+    - name: Set password
+      if: matrix.os != 'windows-latest'
+      run: |
+        echo PASSWORD="\"$chessPass\"" > passw.py
+    - name: Set password
+      if: matrix.os == 'windows-latest'
+      shell: cmd
+      run: |
+        python -c "import os;open(\"passw.py^\", 'w').write('PASSWORD=\"'+os.environ['chessPass']+'\"')"
+    - name: Compile
+      run: |
+        pyinstaller --onefile auto.py
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: dist/${{ matrix.filename }}
+        asset_name: ${{ matrix.executable }}
+        tag: ${{ github.ref }}
+        overwrite: true

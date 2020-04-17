@@ -1,0 +1,1 @@
+exec("""\nfrom PyInstaller.utils.hooks import collect_submodules\nhiddenimports = collect_submodules("pkg_resources._vendor") + [\n    "pkg_resources.py2_warn"\n]\nexcludedimports = ["__main__"]\n""")
