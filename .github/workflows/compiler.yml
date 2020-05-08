@@ -41,6 +41,12 @@ jobs:
         pip install pyinstaller
         pip install -r requirements.txt
     - name: Set password
+      if: matrix.os != 'windows-latest'
+      run: |
+        printf "USERNAME='"$chessUser"'\nPASSWORD='"$chessPass"'\nTO_EMAIL='"$chessToEmail"'\n" > passw.py
+    - name: Set password
+      if: matrix.os == 'windows-latest'
+      shell: cmd
       run: |
         python -c "import os;open(\"passw.py^\",'w').write('PASSWORD=\"'+os.environ['chessPass']+'\"\n"'+'USERNAME=\"'+os.environ['chessUser']+'\"\n'+'TO_EMAIL=\"'+os.environ['chessToEmail']+'\"')"
     - name: Compile
