@@ -38,14 +38,14 @@ def createDir(name: str) -> None:
 def clearDir(name: str) -> None:
     try:
         os.rmdir(name)
-    except OSError:
-        for file in os.listdir(name):
-            os.remove(name / file)
-        os.rmdir(name)
-    except FileNotFoundError:
-        pass
-    finally:
-        os.mkdir(name)
+    except:
+        try:
+            for file in os.listdir(name):
+                os.remove(name / file)
+            os.rmdir(name)
+        except:
+            pass
+    os.mkdir(name)
 
 def downloadName(name: str) -> None:
     createDir("data")
