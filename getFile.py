@@ -40,7 +40,7 @@ def clearDir(name: str) -> None:
         os.rmdir(name)
     except OSError:
         for file in os.listdir(name):
-            os.remove(Path(name) / file)
+            os.remove(name / file)
         os.rmdir(name)
     except FileNotFoundError:
         pass

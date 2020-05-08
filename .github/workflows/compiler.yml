@@ -55,7 +55,7 @@ jobs:
     - name: Zip for Unix
       if: matrix.os != 'windows-latest'
       run: |
-        zip auto.zip dist
+        zip -9 -r auto.zip dist
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v1-release
       with:
