@@ -8,4 +8,5 @@ __MAC*
 *cpython*
 data/
 dest/
+cache/
 passw.py

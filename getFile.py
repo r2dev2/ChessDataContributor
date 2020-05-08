@@ -35,6 +35,18 @@ def createDir(name: str) -> None:
     except FileExistsError:
         pass
 
+def clearDir(name: str) -> None:
+    try:
+        os.rmdir(name)
+    except OSError:
+        for file in os.listdir(name):
+            os.remove(Path(name) / file)
+        os.rmdir(name)
+    except FileNotFoundError:
+        pass
+    finally:
+        os.mkdir(name)
+
 def downloadName(name: str) -> None:
     createDir("data")
     fenurl = "https://raw.githubusercontent.com/r2dev2bb8/ChessData/master/fens/"

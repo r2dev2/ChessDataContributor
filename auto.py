@@ -4,13 +4,15 @@ import stat
 import sys
 import zipfile
 from email.message import EmailMessage
-from multiprocessing import Process
+from multiprocessing import Process, freeze_support, Pool
 from pathlib import Path
 from subprocess import call, check_output
 from typing import *
 
+import cpuinfo
+
 import evalfen
-from getFile import createDir, downloadName, getAvailableNames
+from getFile import createDir, downloadName, getAvailableNames, clearDir
 from send import sendFile, sendNotification
 
 STOCKFISH_DOWNLOAD = {
@@ -21,10 +23,10 @@ STOCKFISH_DOWNLOAD = {
 }
 
 STOCKFISH_LOCATION = {
-    "win32": r"stockfish\stockfish-11-win\Windows\stockfish_20011801_x64_bmi2.exe",
-    "linux": "stockfish/stockfish-11-linux/Linux/stockfish_20011801_x64_bmi2",
-    "linux32": "stockfish/stockfish-11-linux/Linux/stockfish_20011801_x64_bmi2",
-    "darwin": "stockfish/stockfish-11-mac/Mac/stockfish-11-"
+    "win32": r"stockfish\stockfish-11-win\Windows\stockfish_20011801_x64{}.exe",
+    "linux": "stockfish/stockfish-11-linux/Linux/stockfish_20011801_x64_{}",
+    "linux32": "stockfish/stockfish-11-linux/Linux/stockfish_20011801_x64_{}",
+    "darwin": "stockfish/stockfish-11-mac/Mac/stockfish-11-{}"
 }
 
 def promptName() -> str:
@@ -69,11 +71,13 @@ def promptNameChoice() -> Tuple[str]:
     return str(Path(os.getcwd()) / "data" / uin), uin
 
 def findStockfish() -> Path:
-    toadd = "bmi2"
-    if sys.platform == "darwin" and \
-        '-3' in check_output(["/usr/sbin/sysctl", "-n", "machdep.cpu.brand_string"]).decode():
-        toadd = "modern"
-    return Path(os.getcwd()) / (STOCKFISH_LOCATION[sys.platform] + toadd)
+    toadd = "_bmi2" if sys.platform != "darwin" else "bmi2"
+    info = cpuinfo.get_cpu_info()["brand"]
+    if '-2' in info:
+        toadd = ''
+    if '-3' in info:
+        toadd = "_modern" if sys.platform != "darwin" else "modern"
+    return Path(os.getcwd()) / (STOCKFISH_LOCATION[sys.platform]).format(toadd)
 
 
 def promptStockfish() -> Path:
@@ -85,14 +89,6 @@ def promptStockfish() -> Path:
 
 def getNumberThreads() -> int:
    return os.cpu_count()
-
-def progressBar(percentage: float) -> str:
-    numpound = round(percentage*10)
-    numdash = 10-numpound
-    return '[' + numpound*'#' + numdash*'-' + ']\t' + "%.2f" % (percentage*100) + "%"
-
-def countOutput(count: int, length: int) -> None:
-    print(progressBar(count/length), end='\r', flush=True)
 
 def promptThreads() -> int:
     numthreads = getNumberThreads()
@@ -108,6 +104,7 @@ def promptThreads() -> int:
 def main() -> None:
     createDir("dest")
     createDir("data")
+    clearDir("cache")
     if promptDownload():
         names = list(getAvailableNames())
         names.sort()
@@ -120,17 +117,15 @@ def main() -> None:
     dest = str(Path(os.getcwd()) / "dest" / name)
 
     amountlines = evalfen.lineCount(dest)
-    finallines = evalfen.lineCount(source)
-    countOut = lambda c: countOutput(c, finallines)
 
-    evalargs = (source, dest, 22, threads, amountlines, pathToStockfish, countOut)
+    evalargs = (source, dest, 22, threads, amountlines, pathToStockfish)
     evaluate = Process(target=evalfen.main, args=evalargs)
     evaluate.start()
 
     print("Control c to quit")
+    print("Don't be intimidated by the wall of errors :)")
     try:
         evaluate.join()
-        print(dest)
         sendFile(promptName(), dest)
     except KeyboardInterrupt:
         evaluate.terminate()
@@ -139,4 +134,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        freeze_support()
     main()
