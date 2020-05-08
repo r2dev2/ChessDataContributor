@@ -51,17 +51,20 @@ class ThreadWriter:
         self.progressOut()
 
     def listen(self):
-        while True:
-            for match in filter(lambda s: ".evaluation" in s, os.listdir("cache")):
-                n = int(match[:-11])
-                if any(f"{n}eval.lock" in s for s in os.listdir("cache")):
-                    continue
-                locks.create(Path("cache") / f"{n}thread.lock")
-                with open("cache/" + match, 'r') as fin:
-                    evaluation = fin.read()
-                locks.delete("cache/" + match)
-                locks.delete(Path("cache") / f"{n}thread.lock")
-                self.add(evaluation, n)
+        try:
+            while True:
+                for match in filter(lambda s: ".evaluation" in s, os.listdir(Path(os.getcwd())/"cache")):
+                    n = int(match[:-11])
+                    if any(f"{n}eval.lock" in s for s in os.listdir("cache")):
+                        continue
+                    locks.create(Path(os.getcwd())/ "cache"/f"{n}thread.lock")
+                    with open(Path(os.getcwd())/"cache"/match, 'r') as fin:
+                        evaluation = fin.read()
+                    locks.delete(Path(os.getcwd())/"cache"/match)
+                    locks.delete(Path(os.getcwd())/"cache"/f"{n}thread.lock")
+                    self.add(evaluation, n)
+        except BrokenPipeError:
+            pass
 
     def __getstate__(self):
         return self.filename, self.threads, self.num, self.total

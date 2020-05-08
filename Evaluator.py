@@ -36,12 +36,12 @@ class Evaluator:
             board = chess.Board(fen)
             info = self.engine.analyse(board, chess.engine.Limit(depth=22))
             result = str(number) + '\t' + str(info["score"].white())
-            while any(f"{number}writer.lock" in s for s in os.listdir("cache")):
+            while any(f"{number}writer.lock" in s for s in os.listdir(Path(os.getcwd())/"cache")):
                 pass
-            locks.create(Path("cache") / f"{number}eval.lock")
-            with open(Path("cache") / f"{number}.evaluation", 'a+') as fout:
+            locks.create(Path(os.getcwd())/"cache"/f"{number}eval.lock")
+            with open(Path(os.getcwd())/"cache"/f"{number}.evaluation", 'a+') as fout:
                 print(str(info["score"].white()), file=fout, end='')
-            locks.delete(Path("cache") / f"{number}eval.lock")
+            locks.delete(Path(os.getcwd())/"cache"/f"{number}eval.lock")
         except KeyboardInterrupt:
             pass
         # print(result)

@@ -10,3 +10,6 @@ data/
 dest/
 cache/
 passw.py
+dist/
+build/
+auto.spec
