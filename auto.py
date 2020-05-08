@@ -102,9 +102,9 @@ def promptThreads() -> int:
     return userthreads
 
 def main() -> None:
-    createDir("dest")
-    createDir("data")
-    clearDir("cache")
+    createDir("./dest")
+    createDir("./data")
+    clearDir("./cache")
     if promptDownload():
         names = list(getAvailableNames())
         names.sort()

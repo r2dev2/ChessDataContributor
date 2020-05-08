@@ -13,14 +13,14 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
         include: 
         - os: macos-latest
-          executable: chesscontributor-mac
-          filename: auto
+          executable: chesscontributor-mac.zip
+          filename: auto.zip
         - os: windows-latest
           executable: chesscontributor-win.exe
-          filename: auto.exe
+          filename: dist/auto.exe
         - os: ubuntu-latest
-          executable: chesscontributor-linux
-          filename: auto
+          executable: chesscontributor-linux.zip
+          filename: auto.zip
     env:
       chessPass: ${{ secrets.chessPass }}
       chessUser: ${{ secrets.chessUser }}
@@ -52,11 +52,15 @@ jobs:
     - name: Compile
       run: |
         pyinstaller --onefile auto.py
+    - name: Zip for Unix
+      if: matrix.os != 'windows-latest'
+      run: |
+        zip auto.zip dist
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: dist/${{ matrix.filename }}
+        file: ${{ matrix.filename }}
         asset_name: ${{ matrix.executable }}
         tag: ${{ github.ref }}
         overwrite: true
