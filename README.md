@@ -8,3 +8,4 @@ Navigate to the [releases page](https://github.com/r2dev2bb8/ChessDataContributo
 * This application generates chess evaluations for the [ChessData](https://github.com/r2dev2bb8/ChessData) dataset using [Stockfish](https://github.com/mcostalba/Stockfish).
 * The application and dataset are maintained by [Ronak Badhe](https://github.com/r2dev2bb8).
 * The GitHub Actions for compilation are developed by [Kento Nishi](https://github.com/kentonishi).
+* The current contributor won't work properly
