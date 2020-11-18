@@ -13,3 +13,4 @@ passw.py
 dist/
 build/
 auto.spec
+test*.txt
