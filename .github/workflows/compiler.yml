@@ -14,13 +14,13 @@ jobs:
         include: 
         - os: macos-latest
           executable: chesscontributor-mac.zip
-          filename: auto.zip
+          filename: contributor.zip
         - os: windows-latest
           executable: chesscontributor-win.exe
-          filename: dist/auto.exe
+          filename: dist/contributor.exe
         - os: ubuntu-latest
           executable: chesscontributor-linux.zip
-          filename: auto.zip
+          filename: contributor.zip
     env:
       chessPass: ${{ secrets.chessPass }}
       chessUser: ${{ secrets.chessUser }}
@@ -51,11 +51,18 @@ jobs:
         python -c "import os;open(\"passw.py^\",'w').write('PASSWORD=\"'+os.environ['chessPass']+'\"\n"'+'USERNAME=\"'+os.environ['chessUser']+'\"\n'+'TO_EMAIL=\"'+os.environ['chessToEmail']+'\"')"
     - name: Compile
       run: |
-        pyinstaller --onefile auto.py
+        pyinstaller --onefile --noupx contributor/__main__.py
+    - name: Rename file
+      if: matrix.os != 'windows-latest'
+      run: |
+        mv dist/__main__ dist/contributor
+      else:
+      run: |
+        mv dist/__main__.exe dist/contributor.exe
     - name: Zip for Unix
       if: matrix.os != 'windows-latest'
       run: |
-        zip -9 -r auto.zip dist
+        zip -9 -r contributor.zip dist
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v1-release
       with:
