@@ -7,7 +7,6 @@ from queue import Queue
 from threading import Event, Lock, Thread
 
 import chess
-from gooey import Gooey, GooeyParser
 
 import stockfish as sf
 from manager import Manager
@@ -15,28 +14,32 @@ from evaluation import Evaluator
 
 
 pwd = Path.cwd() / ".ChessContrib"
+cli = "--cli" in sys.argv
 
 
 def main():
-    parser = GooeyParser(description="Chess data contributor")
-    parser.add_argument(
-        "--threads",
-        type=int,
-        help="Number of threads to use",
-        default=os.cpu_count(),
-    )
-    parser.add_argument(
-        "--input",
-        help="Name of input file",
-        widget="FileChooser",
-        required=True,
-    )
-    parser.add_argument(
-        "--output",
-        help="Name of output file",
-        widget="FileSaver",
-        required=True,
-    )
+    parser = ArgParser(description="Chess data contributor")
+    arguments = {
+            "--threads": {
+                "type": int,
+                "help": "Number of threads to use",
+                "default": os.cpu_count(),
+            },
+            "--input": {
+                "help": "Name of input file",
+                "widget": "FileChooser",
+                "required": True,
+            },
+            "--output": {
+                "help": "Name of output file",
+                "widget": "FileSaver",
+                "required": True,
+            }
+    }
+    for name, kwargs in arguments.items():
+        if cli and "widget" in kwargs:
+            del kwargs["widget"]
+        parser.add_argument(name, **kwargs)
     args = parser.parse_args()
 
 
@@ -97,6 +100,9 @@ if __name__ == "__main__":
     freeze_support()
     if "--cli" in sys.argv:
         sys.argv.remove("--cli")
+        from argparse import ArgumentParser as ArgParser
     else:
+        from gooey import Gooey, GooeyParser
+        ArgParser = GooeyParser
         main = Gooey(main)
     main()
