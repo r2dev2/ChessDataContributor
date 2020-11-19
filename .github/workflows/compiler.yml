@@ -52,11 +52,12 @@ jobs:
     - name: Compile
       run: |
         pyinstaller --onefile --noupx contributor/__main__.py
-    - name: Rename file
+    - name: Rename file for Unix
       if: matrix.os != 'windows-latest'
       run: |
         mv dist/__main__ dist/contributor
-      else:
+    - name: Rename file for Windows
+      if: matrix.os == 'windows-latest'
       run: |
         mv dist/__main__.exe dist/contributor.exe
     - name: Zip for Unix
