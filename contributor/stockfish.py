@@ -6,10 +6,8 @@ import zipfile
 from multiprocessing import freeze_support
 from pathlib import Path
 from subprocess import call
-from threading import Thread
 
 import cpuinfo
-import requests
 
 
 pwd = Path.cwd() / ".ChessContrib"
@@ -24,13 +22,15 @@ def get_engine_path():
     )
 
 
-def init_stockfish():
+def init():
     try:
         with open(get_engine_path(), 'rb') as fin:
             pass
     except FileNotFoundError:
+        print("Downloading stockfish...")
         __create_dir(str(pwd))
         __download_stockfish()
+        print("Downloaded stockfish")
     except PermissionError:
         pass
 

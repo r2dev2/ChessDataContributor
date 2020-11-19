@@ -16,6 +16,7 @@ class Manager(it.count):
     def init(self, fen_path, progress_path):
         with open(fen_path, 'r') as fin:
             self._fens = [line.rstrip().lstrip() for line in fin]
+        print(len(self._fens) - len(set(self._fens)))
         self._progress =  Progress(progress_path)
 
     def mark_done(self, fen):
