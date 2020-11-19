@@ -16,20 +16,24 @@ class Manager(it.count):
     def init(self, fen_path, progress_path):
         with open(fen_path, 'r') as fin:
             self._fens = [line.rstrip().lstrip() for line in fin]
-        print(len(self._fens) - len(set(self._fens)))
         self._progress =  Progress(progress_path)
+        self.last = 0
 
     def mark_done(self, fen):
         self._progress.add(fen)
+
+    def __len__(self):
+        return len(self._fens)
 
     def __next__(self):
         try:
             res = super().__next__()
             while (self._fens[res] in self._progress):
                 res = super().__next__()
+            self.last = res
         except IndexError:
             raise StopIteration
-        
+
         return self._fens[res]
 
 
