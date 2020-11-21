@@ -13,10 +13,12 @@ class Evaluator:
     >>> engine("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
     >>> del engine
     """
+    depth = 20
 
     number_pattern = re.compile(r"\d+\.")
     def __init__(self, enginepath = "stockfish"):
         self._engine = chess.engine.SimpleEngine.popen_uci(enginepath)
+        self._engine.configure({"Use NNUE": False})
         self._enginepath = enginepath
 
     def close(self):
@@ -31,7 +33,7 @@ class Evaluator:
         """
         try:
             board = chess.Board(fen)
-            info = self._engine.analyse(board, chess.engine.Limit(depth=22))
+            info = self._engine.analyse(board, chess.engine.Limit(depth=Evaluator.depth))
             return self.__info_to_tuple(fen, info)
         except KeyboardInterrupt:
             pass

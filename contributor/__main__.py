@@ -1,6 +1,7 @@
 import itertools as it
 import os
 import sys
+import time
 from multiprocessing import freeze_support
 from pathlib import Path
 from queue import Queue
@@ -63,6 +64,7 @@ def main():
     output_mutex = Lock()
 
     counterr = it.count()
+    beg_time = time.time()
 
     fense = set()
     for i, fen in enumerate(manager, 1):
@@ -92,6 +94,7 @@ def main():
     
     print()
     print(len(fense), next(counterr))
+    print("Took", time.time() - beg_time, "seconds")
 
     del evaluators
 

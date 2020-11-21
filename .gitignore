@@ -15,3 +15,5 @@ build/
 auto.spec
 test*.txt
 *.swp
+test_*.progress
+test_*.csv
