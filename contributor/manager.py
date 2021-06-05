@@ -1,5 +1,6 @@
 import itertools as it
 from threading import Thread, Lock
+from queue import Queue
 
 
 class Manager(it.count):
@@ -13,10 +14,10 @@ class Manager(it.count):
         >>>     evaluate(fen)
         >>>     m.mark_done(fen)
     """
-    def init(self, fen_path, progress_path):
+    def init(self, fen_path, output_path):
         with open(fen_path, 'r') as fin:
-            self._fens = [line.rstrip().lstrip() for line in fin]
-        self._progress =  Progress(progress_path)
+            self._fens = [*map(str.strip, fin)]
+        self._progress =  Progress(output_path)
         self.last = 0
 
     def mark_done(self, fen):
@@ -38,28 +39,14 @@ class Manager(it.count):
 
 
 class Progress(set):
-    def __init__(self, progress_file):
+    def __init__(self, output_file):
         super().__init__()
-        self._progress_file = progress_file
-        self._mutex = Lock()
         try:
-            with open(self._progress_file, 'r') as fin:
+            with open(output_file, 'r') as fin:
                 for line in fin:
-                    super().add(line.rstrip().lstrip())
+                    super().add(line.split(",")[0].strip())
         except FileNotFoundError:
             pass
-
-    def add(self, n):
-        super().add(n)
-        self.save()
-
-    def save(self):
-        Thread(target=self.__save_task).start()
-
-    def __save_task(self):
-        with self._mutex:
-            with open(self._progress_file, 'w+') as fout:
-                print(*self, sep='\n', end='', file=fout)
 
 
 if __name__ == "__main__":

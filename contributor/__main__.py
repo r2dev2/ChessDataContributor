@@ -60,7 +60,7 @@ def main():
         busy[t].set()
         needs_q.put(t)
     manager = Manager()
-    manager.init(args.input, args.input + ".progress")
+    manager.init(args.input, args.output)
     output_mutex = Lock()
 
     counterr = it.count()
@@ -91,7 +91,7 @@ def main():
 
     for sem in busy:
         sem.wait()
-    
+
     print()
     print(len(fense), next(counterr))
     print("Took", time.time() - beg_time, "seconds")

@@ -41,17 +41,18 @@ class Evaluator:
     @staticmethod
     def __info_to_tuple(fen, info):
         ev = str(info["score"].white())
+        return fen, ev
 
-        board = chess.Board(fen)
-        for move in info["pv"]:
-            board.push(move)
-        san = chess.Board(fen).variation_san(board.move_stack)
-        filtered_san = ' '.join((
-            m for m in san.split(' ')
-            if re.match(Evaluator.number_pattern, m) is None
-        ))
+        # board = chess.Board(fen)
+        # for move in info["pv"]:
+        #     board.push(move)
+        # san = chess.Board(fen).variation_san(board.move_stack)
+        # filtered_san = ' '.join((
+        #     m for m in san.split(' ')
+        #     if re.match(Evaluator.number_pattern, m) is None
+        # ))
 
-        return fen, ev, filtered_san
+        # return fen, ev, filtered_san
 
     def __getstate__(self):
         return (self._enginepath,)
