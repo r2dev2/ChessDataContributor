@@ -1,3 +1,10 @@
+"""
+Generate unique fens from lichess games database.
+
+Usage:
+>>> cat evals1.csv evals2.csv ... | python gen_fens.py lichess_games_db.csv
+"""
+
 import itertools as it
 import sys
 
