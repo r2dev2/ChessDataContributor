@@ -29,7 +29,7 @@ class Evaluator:
         Evaluates the position.
 
         :param fen: the fen of the position
-        :return: a tuple of (evaluation string, principle variation)
+        :return: a tuple of (fen, evaluation, best move)
         """
         try:
             board = chess.Board(fen)
@@ -41,7 +41,8 @@ class Evaluator:
     @staticmethod
     def __info_to_tuple(fen, info):
         ev = str(info["score"].white())
-        return fen, ev
+        mov = str(info.get("pv", " ")[0]).strip()
+        return fen, ev, mov
 
         # board = chess.Board(fen)
         # for move in info["pv"]:
